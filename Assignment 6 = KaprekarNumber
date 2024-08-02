@@ -1,0 +1,37 @@
+import java.util.Scanner;
+
+public class KaprekarNumber {
+
+    public static String isKaprekarNumber(int k) {
+        
+        String kStr = Integer.toString(k);
+        int n = kStr.length();
+        int kSquared = k * k;
+        String kSquaredStr = Integer.toString(kSquared);
+        int rightPartLen = n;
+        String rightPartStr = kSquaredStr.length() > rightPartLen 
+                                ? kSquaredStr.substring(kSquaredStr.length() - rightPartLen) 
+                                : kSquaredStr;
+        String leftPartStr = kSquaredStr.length() > rightPartLen 
+                                ? kSquaredStr.substring(0, kSquaredStr.length() - rightPartLen) 
+                                : "0";
+        
+        int rightPart = Integer.parseInt(rightPartStr);
+        int leftPart = Integer.parseInt(leftPartStr);
+        int sumOfParts = leftPart + rightPart;
+        if (sumOfParts == k) {
+            return "Kaprekar Number";
+        } else {
+            return "Not A Kaprekar Number";
+        }
+    }
+    public static void main(String[] args) {
+        
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter a number: ");
+        int inputNumber = scanner.nextInt();
+        String result = isKaprekarNumber(inputNumber);
+        System.out.println(result);
+        scanner.close();
+    }
+}
