@@ -1,0 +1,37 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class SpecialSequenceGenerator {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        System.out.println("Enter the number 'n':");
+        int n = scanner.nextInt();
+        
+        scanner.close();
+        
+        ArrayList<Integer> sequence = new ArrayList<>();
+        sequence.add(2);
+        sequence.add(1);
+        sequence.add(3);
+        
+        while (true) {
+            int size = sequence.size();
+            int nextNumber = sequence.get(size - 1) + sequence.get(size - 2) + sequence.get(size - 3);
+    
+            if (nextNumber > n) {
+                break;
+            }
+            
+            sequence.add(nextNumber);
+        }
+        
+        for (int i = 0; i < sequence.size(); i++) {
+            if (i > 0) {
+                System.out.print(" ");
+            }
+            System.out.print(sequence.get(i));
+        }
+        System.out.println();
+    }
+}
