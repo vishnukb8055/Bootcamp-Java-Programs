@@ -1,0 +1,34 @@
+import java.util.Scanner;
+
+public class CricketRunRateCalculator {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        System.out.println("Enter the number of overs bowled so far:");
+        int oversBowled = scanner.nextInt();
+        
+        System.out.println("Enter the current run rate:");
+        float currentRunRate = scanner.nextFloat();
+        
+        System.out.println("Enter the target score:");
+        int targetScore = scanner.nextInt();
+        
+        scanner.close();
+        
+        int totalOvers = 50;
+        
+        float runsScored = currentRunRate * oversBowled;
+        
+        float remainingRuns = targetScore - runsScored;
+        
+        float remainingOvers = totalOvers - oversBowled;
+        
+        if (remainingOvers > 0) {
+            float requiredRunRate = remainingRuns / remainingOvers;
+            
+            System.out.printf("Required run rate to win the match: %.2f\n", requiredRunRate);
+        } else {
+            System.out.println("All overs are bowled. The match is over.");
+        }
+    }
+}
