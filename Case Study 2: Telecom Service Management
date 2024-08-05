@@ -1,0 +1,249 @@
+package casestudy;
+
+import java.util.Scanner;  
+
+public class TestTelecomService {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);  
+
+        try {
+          
+            System.out.println("Enter details for Prepaid Service:");
+
+            System.out.print("Service Name: ");
+            String prepaidServiceName = scanner.nextLine();
+
+            System.out.print("Service Cost: ");
+            double prepaidServiceCost = scanner.nextDouble();
+
+            System.out.print("Service Duration (days): ");
+            int prepaidServiceDuration = scanner.nextInt();
+
+            System.out.print("Data Balance (GB): ");
+            double prepaidDataBalance = scanner.nextDouble();
+
+            scanner.nextLine();
+        
+            PrepaidService prepaid = new PrepaidService(prepaidServiceName, prepaidServiceCost, prepaidServiceDuration, prepaidDataBalance);
+
+            System.out.println("\nPrepaid Service Initial Details:");
+            System.out.println(prepaid.getServiceDetails());
+
+            double prepaidCost = prepaid.calculateTotalCost();
+            System.out.printf("Total Cost before Discount: %.2f\n", prepaidCost);
+
+            System.out.print("Enter discount percentage: ");
+            double prepaidDiscount = scanner.nextDouble();
+            prepaid.applyDiscount(prepaidDiscount);
+
+            System.out.printf("Total Cost after Discount: %.2f\n", prepaid.calculateTotalCost());
+
+            System.out.print("Enter additional days for renewal: ");
+            int prepaidAdditionalDays = scanner.nextInt();
+            prepaid.renewService(prepaidAdditionalDays);
+            System.out.println("Prepaid Service Details after Renewal:");
+            System.out.println(prepaid.getServiceDetails());
+
+            
+            System.out.println("\nEnter details for Postpaid Service:");
+
+            scanner.nextLine(); 
+
+            System.out.print("Service Name: ");
+            String postpaidServiceName = scanner.nextLine();
+
+            System.out.print("Service Cost: ");
+            double postpaidServiceCost = scanner.nextDouble();
+
+            System.out.print("Service Duration (days): ");
+            int postpaidServiceDuration = scanner.nextInt();
+
+            System.out.print("Monthly Limit (GB): ");
+            double postpaidMonthlyLimit = scanner.nextDouble();
+
+            PostpaidService postpaid = new PostpaidService(postpaidServiceName, postpaidServiceCost, postpaidServiceDuration, postpaidMonthlyLimit);
+
+            System.out.println("\nPostpaid Service Initial Details:");
+            System.out.println(postpaid.getServiceDetails());
+
+            double postpaidCost = postpaid.calculateTotalCost();
+            System.out.printf("Total Cost before Discount: %.2f\n", postpaidCost);
+
+            System.out.print("Enter discount percentage: ");
+            double postpaidDiscount = scanner.nextDouble();
+            postpaid.applyDiscount(postpaidDiscount);
+  
+            System.out.printf("Total Cost after Discount: %.2f\n", postpaid.calculateTotalCost());
+
+            System.out.print("Enter additional days for renewal: ");
+            int postpaidAdditionalDays = scanner.nextInt();
+            postpaid.renewService(postpaidAdditionalDays);
+            System.out.println("Postpaid Service Details after Renewal:");
+            System.out.println(postpaid.getServiceDetails());
+
+        } catch (InvalidServiceDurationException | InvalidDiscountException e) {
+            System.err.println("Error: " + e.getMessage());
+        } finally {
+            scanner.close();
+        }
+    }
+}
+
+
+package casestudy;
+
+public abstract class TelecomService {
+    private String serviceName;
+    private double serviceCost;
+    private int serviceDuration; 
+
+    public TelecomService(String serviceName, double serviceCost, int serviceDuration) throws InvalidServiceDurationException {
+        if (serviceDuration < 0) {
+            throw new InvalidServiceDurationException("Service duration cannot be negative.");
+        }
+        this.serviceName = serviceName;
+        this.serviceCost = serviceCost;
+        this.serviceDuration = serviceDuration;
+    }
+
+    public abstract double calculateTotalCost();
+    public abstract String getServiceDetails();
+
+    public void applyDiscount(double discountPercentage) throws InvalidDiscountException {
+        if (discountPercentage < 0 || discountPercentage > 100) {
+            throw new InvalidDiscountException("Discount percentage must be between 0 and 100.");
+        }
+        serviceCost -= serviceCost * (discountPercentage / 100);
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public double getServiceCost() {
+        return serviceCost;
+    }
+
+    public void setServiceCost(double serviceCost) {
+        this.serviceCost = serviceCost;
+    }
+
+    public int getServiceDuration() {
+        return serviceDuration;
+    }
+
+    public void setServiceDuration(int serviceDuration) {
+        this.serviceDuration = serviceDuration;
+    }
+}
+
+
+package casestudy;
+
+public class PrepaidService extends TelecomService implements Renewable {
+    private double dataBalance;
+
+    public PrepaidService(String serviceName, double serviceCost, int serviceDuration, double dataBalance) throws InvalidServiceDurationException {
+        super(serviceName, serviceCost, serviceDuration);
+        this.dataBalance = dataBalance;
+    }
+
+    @Override
+    public double calculateTotalCost() {
+        double totalCost = getServiceCost() * getServiceDuration();
+        if (dataBalance < 1) {
+            totalCost += 10; 
+        }
+        return totalCost;
+    }
+
+    @Override
+    public String getServiceDetails() {
+        return String.format("Prepaid Service: %s\nCost: %.2f\nDuration: %d days\nData Balance: %.2f GB",
+                             getServiceName(), getServiceCost(), getServiceDuration(), dataBalance);
+    }
+
+    @Override
+    public void renewService(int additionalDays) throws InvalidServiceDurationException {
+        if (additionalDays < 0) {
+            throw new InvalidServiceDurationException("Additional days for renewal cannot be negative.");
+        }
+        setServiceDuration(getServiceDuration() + additionalDays);
+    }
+
+    public double getDataBalance() {
+        return dataBalance;
+    }
+
+    public void setDataBalance(double dataBalance) {
+        this.dataBalance = dataBalance;
+    }
+}
+
+
+package casestudy;
+
+public class PostpaidService extends TelecomService implements Renewable {
+    private double monthlyLimit; 
+
+    public PostpaidService(String serviceName, double serviceCost, int serviceDuration, double monthlyLimit) throws InvalidServiceDurationException {
+        super(serviceName, serviceCost, serviceDuration);
+        this.monthlyLimit = monthlyLimit;
+    }
+
+    @Override
+    public double calculateTotalCost() {
+        double totalCost = getServiceCost();
+        if (monthlyLimit < 1) { 
+            totalCost += 20; 
+        }
+        return totalCost;
+    }
+
+    @Override
+    public String getServiceDetails() {
+        return String.format("Postpaid Service: %s\nCost: %.2f\nDuration: %d days\nMonthly Limit: %.2f GB",
+                             getServiceName(), getServiceCost(), getServiceDuration(), monthlyLimit);
+    }
+
+    @Override
+    public void renewService(int additionalDays) throws InvalidServiceDurationException {
+        if (additionalDays < 0) {
+            throw new InvalidServiceDurationException("Additional days for renewal cannot be negative.");
+        }
+        setServiceDuration(getServiceDuration() + additionalDays);
+    }
+
+    public double getMonthlyLimit() {
+        return monthlyLimit;
+    }
+
+    public void setMonthlyLimit(double monthlyLimit) {
+        this.monthlyLimit = monthlyLimit;
+    }
+}
+
+
+package casestudy;
+
+public interface Renewable {
+    void renewService(int additionalDays) throws InvalidServiceDurationException;
+}
+
+
+package casestudy;
+
+public class InvalidServiceDurationException extends Exception {
+    public InvalidServiceDurationException(String message) {
+        super(message);
+    }
+}
+
+
+package casestudy;
+
+public class InvalidDiscountException extends Exception {
+    public InvalidDiscountException(String message) {
+        super(message);
+    }
+}
