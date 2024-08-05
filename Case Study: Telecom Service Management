@@ -1,0 +1,165 @@
+package casestudy;
+
+public class TestTelecomService {
+    public static void main(String[] args) {
+        PrepaidService prepaid = new PrepaidService("Basic Prepaid", 30.00, 30, 0.5);
+        System.out.println("Prepaid Service Details Before Renewal:");
+        System.out.println(prepaid.getServiceDetails());
+        System.out.println("Total Cost: $" + prepaid.calculateTotalCost());
+ 
+        prepaid.applyDiscount(10);
+        System.out.println("\nAfter Applying Discount:");
+        System.out.println(prepaid.getServiceDetails());
+        System.out.println("Total Cost: $" + prepaid.calculateTotalCost());
+ 
+        prepaid.renewService(15);
+        System.out.println("\nAfter Renewal:");
+        System.out.println(prepaid.getServiceDetails());
+        System.out.println("Total Cost: $" + prepaid.calculateTotalCost());
+ 
+        PostpaidService postpaid = new PostpaidService("Premium Postpaid", 50.00, 30, 50);
+        System.out.println("\nPostpaid Service Details Before Renewal:");
+        System.out.println(postpaid.getServiceDetails());
+        System.out.println("Total Cost: $" + postpaid.calculateTotalCost());
+ 
+        postpaid.applyDiscount(15);
+        System.out.println("\nAfter Applying Discount:");
+        System.out.println(postpaid.getServiceDetails());
+        System.out.println("Total Cost: $" + postpaid.calculateTotalCost());
+ 
+        postpaid.renewService(10);
+        System.out.println("\nAfter Renewal:");
+        System.out.println(postpaid.getServiceDetails());
+        System.out.println("Total Cost: $" + postpaid.calculateTotalCost());
+    }
+}
+
+
+package casestudy;
+
+public abstract class TelecomService {
+    private String serviceName;
+    private double serviceCost;
+    private int serviceDuration; // in days
+
+    public TelecomService(String serviceName, double serviceCost, int serviceDuration) {
+        this.serviceName = serviceName;
+        this.serviceCost = serviceCost;
+        this.serviceDuration = serviceDuration;
+    }
+
+    public abstract double calculateTotalCost();
+    public abstract String getServiceDetails();
+
+    public void applyDiscount(double discountPercentage) {
+        serviceCost -= serviceCost * (discountPercentage / 100);
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public double getServiceCost() {
+        return serviceCost;
+    }
+
+    public void setServiceCost(double serviceCost) {
+        this.serviceCost = serviceCost;
+    }
+
+    public int getServiceDuration() {
+        return serviceDuration;
+    }
+
+    public void setServiceDuration(int serviceDuration) {
+        this.serviceDuration = serviceDuration;
+    }
+}
+
+
+package casestudy;
+
+public class PrepaidService extends TelecomService implements Renewable {
+    private double dataBalance; // in GB
+
+    public PrepaidService(String serviceName, double serviceCost, int serviceDuration, double dataBalance) {
+        super(serviceName, serviceCost, serviceDuration);
+        this.dataBalance = dataBalance;
+    }
+
+    @Override
+    public double calculateTotalCost() {
+        double totalCost = getServiceCost() * getServiceDuration();
+        if (dataBalance < 1) {
+            totalCost += 10; // surcharge of $10
+        }
+        return totalCost;
+    }
+
+    @Override
+    public String getServiceDetails() {
+        return String.format("Prepaid Service: %s\nCost: %.2f\nDuration: %d days\nData Balance: %.2f GB",
+                             getServiceName(), getServiceCost(), getServiceDuration(), dataBalance);
+    }
+
+    @Override
+    public void renewService(int additionalDays) {
+        setServiceDuration(getServiceDuration() + additionalDays);
+    }
+
+    public double getDataBalance() {
+        return dataBalance;
+    }
+
+    public void setDataBalance(double dataBalance) {
+        this.dataBalance = dataBalance;
+    }
+}
+
+
+package casestudy;
+
+public class PostpaidService extends TelecomService implements Renewable {
+    private double monthlyLimit; // in GB
+
+    public PostpaidService(String serviceName, double serviceCost, int serviceDuration, double monthlyLimit) {
+        super(serviceName, serviceCost, serviceDuration);
+        this.monthlyLimit = monthlyLimit;
+    }
+
+    @Override
+    public double calculateTotalCost() {
+        double totalCost = getServiceCost();
+        if (monthlyLimit < 1) { // Assuming usage exceeds limit
+            totalCost += 20; // additional $20
+        }
+        return totalCost;
+    }
+
+    @Override
+    public String getServiceDetails() {
+        return String.format("Postpaid Service: %s\nCost: %.2f\nDuration: %d days\nMonthly Limit: %.2f GB",
+                             getServiceName(), getServiceCost(), getServiceDuration(), monthlyLimit);
+    }
+
+    @Override
+    public void renewService(int additionalDays) {
+        setServiceDuration(getServiceDuration() + additionalDays);
+    }
+
+    public double getMonthlyLimit() {
+        return monthlyLimit;
+    }
+
+    public void setMonthlyLimit(double monthlyLimit) {
+        this.monthlyLimit = monthlyLimit;
+    }
+}
+
+
+package casestudy;
+
+public interface Renewable {
+    void renewService(int additionalDays);
+}
+
