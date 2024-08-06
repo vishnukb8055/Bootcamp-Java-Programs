@@ -1,0 +1,54 @@
+package StudentMarks;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
+
+public class StudentMarks {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter number of Students:");
+        int numOfStudents = scanner.nextInt();
+        if (numOfStudents <= 0) {
+            System.out.println("Number of students should be greater than 0.");
+            return;
+        }
+        List<Integer> marksList = new ArrayList<>();
+        System.out.println("Enter Marks:");
+        for (int i = 0; i < numOfStudents; i++) {
+            int mark = scanner.nextInt();
+            marksList.add(mark);
+        }
+        int highestMark = Collections.max(marksList);
+        System.out.println("Highest Marks : " + highestMark);
+        double totalMarks = 0;
+        for (int mark : marksList) {
+            totalMarks += mark;
+        }
+        double averageMarks = totalMarks / numOfStudents;
+        System.out.println("Average Marks : " + averageMarks);
+        if (numOfStudents >= 3) {
+            System.out.println("3rd Student marks : " + marksList.get(2));
+        } else {
+            System.out.println("Less than 3 students provided.");
+        }
+        System.out.print("Marks : ");
+        for (int i = 0; i < marksList.size(); i++) {
+            System.out.print((i + 1) + "-" + marksList.get(i) + " ");
+        }
+        System.out.println();
+        Collections.sort(marksList);
+        System.out.print("Sorted : ");
+        Iterator<Integer> iterator = marksList.iterator();
+        int index = 1;
+        while (iterator.hasNext()) {
+            System.out.print(index + "-" + iterator.next() + " ");
+            index++;
+        }
+        System.out.println();
+        scanner.close();
+    }
+}
