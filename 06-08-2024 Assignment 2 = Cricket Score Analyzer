@@ -1,0 +1,64 @@
+package CricketScoreAnalyzer;
+
+import java.util.Scanner;
+
+public class TestScoreAnalyzer {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        ScoreAnalyzer analyzer = new ScoreAnalyzer();
+        System.out.println("Enter Runs scored by each player with a space:");
+        String[] input = scanner.nextLine().split(" ");
+        for (String str : input) {
+            int runs = Integer.parseInt(str);
+            analyzer.addRunsToList(runs);
+        }
+        System.out.print("Runs Scored : ");
+        analyzer.displayRuns();
+        double runRate = analyzer.calcRunRate();
+        System.out.println("Runrate : " + String.format("%.2f", runRate));
+        int lowestRuns = analyzer.lowestRunsScored();
+        System.out.println("Lowest Runs : " + lowestRuns);
+        System.out.println("Count of player who batted: " + analyzer.getPlayerCount());
+        scanner.close();
+    }
+}
+
+
+package CricketScoreAnalyzer;
+
+import java.util.LinkedList;
+
+public class ScoreAnalyzer {
+    private LinkedList<Integer> runsData;
+    public ScoreAnalyzer() {
+        runsData = new LinkedList<>();
+    }
+    public void addRunsToList(int runs) {
+        runsData.add(runs);
+    }
+    public double calcRunRate() {
+        int totalRuns = 0;
+        for (int runs : runsData) {
+            totalRuns += runs;
+        }
+        return totalRuns / 50.0;
+    }
+    public int lowestRunsScored() {
+        if (runsData.isEmpty()) {
+            throw new IllegalStateException("No runs data available");
+        }
+        return runsData.stream().min(Integer::compare).orElseThrow();
+    }
+    public void displayRuns() {
+        int index = 1;
+        for (int runs : runsData) {
+            System.out.print(index + "-" + runs + " ");
+            index++;
+        }
+        System.out.println();
+    }
+    public int getPlayerCount() {
+        return runsData.size();
+    }
+}
