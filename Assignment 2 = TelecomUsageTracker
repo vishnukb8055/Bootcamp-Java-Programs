@@ -1,0 +1,58 @@
+package TelecomBillingSystem;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class TelecomUsageTracker {
+    private Map<String, Map<String, Integer>> customerUsageMap;
+    public TelecomUsageTracker() {
+        customerUsageMap = new HashMap<>();
+    }
+    public void addOrUpdateUsage(String customerId, String serviceType, int usage) {
+        customerUsageMap.putIfAbsent(customerId, new HashMap<>());
+        Map<String, Integer> services = customerUsageMap.get(customerId);
+        services.put(serviceType, usage);
+    }
+    public int getTotalUsage(String customerId) {
+        if (!customerUsageMap.containsKey(customerId)) {
+            return 0; 
+        }
+        Map<String, Integer> services = customerUsageMap.get(customerId);
+        int totalUsage = 0;
+        for (int usage : services.values()) {
+            totalUsage += usage;
+        }
+        return totalUsage;
+    }
+    public void printUsageReport() {
+        if (customerUsageMap.isEmpty()) {
+            System.out.println("No customer usage data available.");
+            return;
+        }
+        for (Map.Entry<String, Map<String, Integer>> entry : customerUsageMap.entrySet()) {
+            String customerId = entry.getKey();
+            Map<String, Integer> services = entry.getValue();
+            System.out.println("Customer ID: " + customerId);
+            if (services.isEmpty()) {
+                System.out.println("  No services used.");
+            } else {
+                for (Map.Entry<String, Integer> serviceEntry : services.entrySet()) {
+                    String serviceType = serviceEntry.getKey();
+                    int usage = serviceEntry.getValue();
+                    System.out.println("  Service: " + serviceType + ", Usage: " + usage);
+                }
+            }
+        }
+    }
+    public static void main(String[] args) {
+        TelecomUsageTracker tracker = new TelecomUsageTracker();
+        tracker.addOrUpdateUsage("01", "Data", 500);
+        tracker.addOrUpdateUsage("01", "Calls", 300);
+        tracker.addOrUpdateUsage("02", "Data", 200);
+        tracker.addOrUpdateUsage("03", "Messages", 150);
+        tracker.addOrUpdateUsage("03", "Calls", 400);
+        System.out.println("Total usage for customer C001: " + tracker.getTotalUsage("C001"));
+        System.out.println("\nUsage Report:");
+        tracker.printUsageReport();
+    }
+}
