@@ -1,0 +1,78 @@
+package TreeMap;
+
+import java.util.Map;
+import java.util.TreeMap;
+
+public class CustomerManager {
+    private TreeMap<Integer, Customer> customers;
+
+    public CustomerManager() {
+        customers = new TreeMap<>();
+    }
+
+    public void addCustomer(Customer customer) {
+        customers.put(customer.getCustomerId(), customer);
+    }
+
+    public void printCustomersByLocation(String location) {
+        for (Map.Entry<Integer, Customer> entry : customers.entrySet()) {
+            Customer customer = entry.getValue();
+            if (customer.getLocation().equalsIgnoreCase(location)) {
+                System.out.println(customer);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        CustomerManager manager = new CustomerManager();
+        
+        manager.addCustomer(new Customer(1, "Alice", "Bangalore", "alice@gmail.com"));
+        manager.addCustomer(new Customer(2, "Bob", "Mumbai", "bob@gmail.com"));
+        manager.addCustomer(new Customer(3, "Charlie", "Bangalore", "charlie@gmail.com"));
+        manager.addCustomer(new Customer(4, "David", "Delhi", "david@gmail.com"));
+
+        System.out.println("Customers from Bangalore:");
+        manager.printCustomersByLocation("Bangalore");
+    }
+}
+
+
+package TreeMap;
+
+public class Customer {
+    private int customerId;
+    private String name;
+    private String location;
+    private String email;
+
+    public Customer(int customerId, String name, String location, String email) {
+        this.customerId = customerId;
+        this.name = name;
+        this.location = location;
+        this.email = email;
+    }
+
+    public int getCustomerId() {
+        return customerId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer ID: " + customerId + "\n" +
+               "Name: " + name + "\n" +
+               "Location: " + location + "\n" +
+               "Email: " + email + "\n";
+    }
+}
